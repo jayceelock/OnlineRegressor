@@ -47,6 +47,7 @@ public class ActivityMain extends AppCompatActivity
     private ClassInterfaceParameters interfaceParameters;
     private ClassRenderer renderer;
     private ClassHelper helper = new ClassHelper(ActivityMain.this);
+    private ClassMetrics metrics;
 
     private int displayRotation = 0;
 
@@ -58,6 +59,7 @@ public class ActivityMain extends AppCompatActivity
 
         surfaceView = (SurfaceView)findViewById(R.id.surfaceview);
         renderer = new ClassRenderer(this);
+        metrics = new ClassMetrics();
 
         interfaceParameters = new ClassInterfaceParameters(ActivityMain.this);
 
@@ -138,7 +140,9 @@ public class ActivityMain extends AppCompatActivity
         {
             case MotionEvent.ACTION_DOWN:
                 // metrics.updateTargetPosition(currentTarget);
-                renderer.updateTarget(helper.selectRandomTarget());
+                double[] currentTarget = helper.selectRandomTarget();
+                renderer.updateTarget(currentTarget);
+                metrics.updateTargetPosition(currentTarget);
                 break;
         }
 
@@ -246,4 +250,5 @@ public class ActivityMain extends AppCompatActivity
     public ClassInterfaceParameters getInterfaceParameters() { return this.interfaceParameters; }
     public RunnableSoundGenerator getRunnableSoundGenerator() { return this.runnableSoundGenerator; }
     public int getDisplayRotation() { return this.displayRotation; }
+    public ClassMetrics getMetrics() { return this.metrics; }
 }

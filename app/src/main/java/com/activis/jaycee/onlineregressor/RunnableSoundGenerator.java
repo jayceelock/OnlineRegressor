@@ -30,6 +30,7 @@ public class RunnableSoundGenerator implements Runnable
             double xPositionListener = ClassHelper.getXPosition(targetPoseVector, tangoPose);
             double xPositionSource = activityMain.getRenderer().getObjectPosition().x;
 
+            activityMain.getMetrics().updateElevationAngle(elevationAngle);
             Log.d(TAG, String.format("xPos: %f", xPositionListener));
 
             float[] tempSrc = new float[3];
@@ -53,6 +54,9 @@ public class RunnableSoundGenerator implements Runnable
 
             tempSrc[0] = (float)xPositionSource;
             tempList[0] = (float)xPositionListener;
+
+            activityMain.getMetrics().updatePitch(pitch);
+            activityMain.getMetrics().updateGain(gain);
 
             JNINativeInterface.play(tempSrc, tempList, gain, pitch);
         }

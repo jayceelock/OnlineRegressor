@@ -34,6 +34,8 @@ public class ClassMetrics
     private double a2 = 0;
     /*private double a3 = 0;*/
 
+    private int order = 2;
+
     public ClassMetrics() { }
 
     static double log2(float x)
@@ -46,10 +48,9 @@ public class ClassMetrics
         this.timeStamp = timestamp;
         this.n += 1;
 
-        int order = 2;
         double Z = 0;
 
-        if(order == 2)
+        if(this.order == 2)
         {
             this.sx  +=  (this.elevationAngle);
             this.sx2 +=  Math.pow(this.elevationAngle, 2);
@@ -106,4 +107,5 @@ public class ClassMetrics
 
     public int getN() { return this.n; }
     public double[] getRegressorParams(){ return new double[] {this.a0, this.a1, this.a2}; }
+    public int getOrder() { return this.order; }
 }

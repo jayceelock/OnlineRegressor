@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Display;
 import android.view.MotionEvent;
+import android.widget.TextView;
 
 import com.google.atap.tangoservice.Tango;
 import com.google.atap.tangoservice.TangoCameraIntrinsics;
@@ -24,6 +25,7 @@ import com.projecttango.tangosupport.TangoSupport;
 
 import org.rajawali3d.view.SurfaceView;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -41,6 +43,7 @@ public class ActivityMain extends AppCompatActivity
     private Tango tango;
 
     private SurfaceView surfaceView;
+    private TextView textViewAccuracy, textViewOrigPitch, textViewAdaptedPitch;
 
     private ClassFrameCallback sceneFrameCallback = new ClassFrameCallback(ActivityMain.this);
     private RunnableSoundGenerator runnableSoundGenerator = new RunnableSoundGenerator(ActivityMain.this);
@@ -58,6 +61,10 @@ public class ActivityMain extends AppCompatActivity
         setContentView(R.layout.activity_main);
 
         surfaceView = (SurfaceView)findViewById(R.id.surfaceview);
+        textViewAccuracy = (TextView) findViewById(R.id.text_accuracy);
+        textViewAdaptedPitch = (TextView)findViewById(R.id.text_adapted_pitch);
+        textViewOrigPitch = (TextView)findViewById(R.id.text_orig_pitch);
+
         renderer = new ClassRenderer(this);
         metrics = new ClassMetrics();
 
@@ -236,6 +243,31 @@ public class ActivityMain extends AppCompatActivity
                 {
                     renderer.updateColorCameraTextureUvGlThread(displayRotation);
                 }
+            }
+        });
+    }
+
+    public void setPitchText(final float oPitch, final float aPitch)
+    {
+        runOnUiThread(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                textViewAdaptedPitch.setText(String.valueOf(aPitch));
+                textViewOrigPitch.setText(String.valueOf(oPitch));
+            }
+        });
+    }
+
+    public void setAccuracyText(final double error)
+    {
+        runOnUiThread(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                textViewAccuracy.setText(new DecimalFormat("##.##").format(error));
             }
         });
     }

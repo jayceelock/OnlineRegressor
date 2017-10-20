@@ -14,7 +14,7 @@ public class ClassInterfaceParameters implements Serializable
     private float pitchHighLim, pitchLowLim, pitchGradient, pitchIntercept;
     private float gainHighLim, gainLowLim, gainGradient, gainIntercept;
     private float distanceThreshold;
-    private float intercept, grad;
+    private float a0, a1, a2;
 
     private int vibrationDelay, voiceTiming;
 
@@ -86,8 +86,19 @@ public class ClassInterfaceParameters implements Serializable
 
         double gradientAngle = Math.toDegrees(Math.atan((pitchHighLim - pitchLowLim) / Math.PI));
 
-        grad = (float) (Math.tan(Math.toRadians(gradientAngle)));
-        intercept = (float) (pitchHighLim - Math.PI / 2 * grad);
+        if(activityMain.getMetrics().getOrder() == 2)
+        {
+            a1 = (float) (Math.tan(Math.toRadians(gradientAngle)));
+            a0 = (float) (pitchHighLim - Math.PI / 2 * a1);
+        }
+
+        else if(activityMain.getMetrics().getOrder() == 3)
+        {
+            /* Get initial values from MatLab */
+            a0 = 2.8234f;
+            a1 = -5.5891f;
+            a2 = 2.2394f;
+        }
     }
 
     void updatePitchParams(float highLim, float lowLim)
@@ -131,12 +142,13 @@ public class ClassInterfaceParameters implements Serializable
             {
                 double[] regressorParams = activityMain.getMetrics().getRegressorParams();
 
-                grad = (float)(-regressorParams[1]);
-                intercept = (float)(regressorParams[0]);
+                a0 = (float)(regressorParams[0]);
+                a1 = (float)(-regressorParams[1]);
+                a2 = (float)(regressorParams[2]);
                 Log.d(TAG, "Updating params");
             }
 
-            pitch = (float)(Math.pow(2, grad * -elevation + intercept));
+            pitch = (float)(Math.pow(2, a0 - elevation*a1));
 
             if(pitch > Math.pow(2, 12))
             {
@@ -146,9 +158,8 @@ public class ClassInterfaceParameters implements Serializable
             {
                 pitch = (float)Math.pow(2, 6);
             }
-
-            // Log.d(TAG, String.format("Exponent: %f", regressorParams[0] + regressorParams[1] * elevation + regressorParams[2] * Math.pow(elevation, 2) + elevation * Math.pow(regressorParams[3], 3)));
             Log.d(TAG, String.format("Original: %f New: %f", getOPitch(elevation), pitch));
+            activityMain.setPitchText(getOPitch(elevation), pitch);
         }
 
         return pitch;

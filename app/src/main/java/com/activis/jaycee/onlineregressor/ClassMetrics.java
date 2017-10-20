@@ -19,25 +19,20 @@ public class ClassMetrics
     private int n = 0;
     private double sx = 1;
     private double sx2 = 1;
-    /*private double sx3 = 0;
-    private double sx4  = 0;
-    private double sx5  = 0;
+    private double sx3 = 1;
+    private double sx4  = 1;
+/*    private double sx5  = 0;
     private double sx6  = 0;*/
 
     private double sy = 1;
     private double sxy = 1;
-    /*private double sx2y = 0;
-    private double sx3y = 0;*/
+    private double sx2y = 0;
+    /*private double sx3y = 0;*/
 
     private double a0 = 1;
     private double a1 = 1;
-    /*private double a2 = 0;
-    private double a3 = 0;*/
-
-    private double lastSx = 0;
-    private double lastSx2 = 0;
-    private double lastSy = 0;
-    private double lastSxy = 0;
+    private double a2 = 0;
+    /*private double a3 = 0;*/
 
     public ClassMetrics() { }
 
@@ -49,37 +44,41 @@ public class ClassMetrics
     public void updateTimestamp(double timestamp)
     {
         this.timeStamp = timestamp;
-        double c = 0.98;
         this.n += 1;
 
-        /*this.sx  +=  log2(this.pitch);
-        this.sx2 +=  Math.pow(log2(this.pitch), 2);
-        this.sx3 +=  Math.pow(log2(this.pitch), 3);
-        this.sx4 +=  Math.pow(log2(this.pitch), 4);
-        this.sx5 +=  0;//Math.pow(log2(this.pitch), 5);
-        this.sx6 +=  0;//Math.pow(log2(this.pitch), 6);
+        int order = 2;
+        double Z = 0;
 
-        this.sy   += this.elevationAngle;
-        this.sxy  += (log2(this.pitch) * this.elevationAngle);
-        this.sx2y += (Math.pow(log2(this.pitch), 2) * this.elevationAngle); // Don't need to log here; being squared
-        this.sx3y += 0;//(Math.pow(log2(this.pitch), 3) * this.elevationAngle);*/
+        if(order == 2)
+        {
+            this.sx  +=  (this.elevationAngle);
+            this.sx2 +=  Math.pow(this.elevationAngle, 2);
 
-        // Log.d(TAG, String.format("Angle: %f", this.elevationAngle));
-        this.sx  +=  ((this.elevationAngle) - lastSx);
-        this.sx2 +=  (Math.pow(this.elevationAngle, 2) - lastSx2);
-        // this.sx3 =  Math.pow(this.elevationAngle, 3);
-        // this.sx4 =  Math.pow(this.elevationAngle, 4);
+            this.sy   += log2(this.pitch);
+            this.sxy  += log2(this.pitch) * this.elevationAngle;
 
-        this.sy   += (log2(this.pitch) - lastSy);
-        this.sxy  += (log2(this.pitch) * this.elevationAngle - lastSxy);
-        // this.sx2y = (log2(this.pitch) * Math.pow(this.elevationAngle, 2));
-        // Log.d(TAG, String.format("Log(Pitch): %f Pitch: %f", log2(this.pitch), this.pitch));
+            Z = this.n*this.sx2 - this.sx*this.sx;
 
-        /*double Z = Math.pow(this.sx3, 4) - 3*this.sx2*Math.pow(this.sx3, 2)*this.sx4 + Math.pow(this.sx2, 2)*Math.pow(this.sx4, 2) + 2*this.sx*this.sx3*Math.pow(this.sx4, 2)
-                - this.n*Math.pow(this.sx4, 3) + 2*Math.pow(this.sx2, 2)*this.sx3*this.sx5 - 2*this.sx*Math.pow(this.sx3, 2)*this.sx5 - 2*this.sx*this.sx2*this.sx4*this.sx5
-                + 2*this.n*this.sx3*this.sx4*this.sx5 + Math.pow(this.sx, 2)*Math.pow(this.sx5, 2) - this.n*this.sx2*Math.pow(this.sx5, 2) - Math.pow(this.sx2, 3)*this.sx6
-                + 2*this.sx*this.sx2*this.sx3*this.sx6 - this.n*Math.pow(this.sx3, 2)*this.sx6 - Math.pow(this.sx, 2)*this.sx4*this.sx6 + this.n*this.sx2*this.sx4*this.sx6;*/
-        double Z = this.n*this.sx2 - this.sx*this.sx;
+            this.a0 = 1/Z * (this.sx2*this.sy - this.sx*this.sxy);
+            this.a1 = 1/Z * (n*this.sxy - this.sx*this.sy);
+        }
+
+        else if(order == 3)
+        {
+            this.sx  +=  (this.elevationAngle);
+            this.sx2 +=  Math.pow(this.elevationAngle, 2);
+            this.sx3 +=  Math.pow(this.elevationAngle, 3);
+
+            this.sy    += log2(this.pitch);
+            this.sxy   += log2(this.pitch) * this.elevationAngle;
+            this.sx2y  += log2(this.pitch) * Math.pow(this.elevationAngle, 2);
+
+            Z = Math.pow(this.sx2, 3) - 2*this.sx*this.sx2*this.sx3 + this.n*Math.pow(this.sx3, 2) + Math.pow(this.sx, 2)*this.sx4 - this.n*this.sx2*this.sx4;
+
+            this.a0 = 1 / Z * (Math.pow(this.sx2, 2)*this.sx2y - this.sx*this.sx2y*this.sx3 - this.sx2*this.sx3*this.sxy + this.sx*this.sx4*this.sxy + Math.pow(this.sx3, 2)*this.sy - this.sx2*this.sx4*this.sy);
+            this.a1 = 1 / Z * -(this.sx*this.sx2*this.sx2y - this.n*this.sx2y*this.sx3 - Math.pow(this.sx2, 2)*this.sxy + this.n*this.sx4*this.sxy + this.sx2*this.sx3*this.sy - this.sx*this.sx4*this.sy);
+            this.a2 = 1 / Z * (Math.pow(this.sx, 2)*this.sx2y - this.n*this.sx2*this.sx2y - this.sx*this.sx2*this.sxy + this.n*this.sx3*this.sxy + Math.pow(this.sx2, 2)*this.sy - this.sx*this.sx3*this.sy);
+        }
 
         if(Double.isInfinite(1/Z) || Double.isNaN(1/Z))
         {
@@ -97,45 +96,6 @@ public class ClassMetrics
         {
             Log.d(TAG, String.format("Z: %f\nsx: %f\n sx2: %f", Z, this.sx, this.sx2));
         }
-        // Log.d(TAG, String.format("Z: %f", Z));
-        // Log.d(TAG, String.format("Pitch: %f", log2(this.pitch)));
-
-        /*this.a0 = 1 / Z * (Math.pow(this.sx3, 3)*this.sx3y - this.sx2y*Math.pow(this.sx3, 2)*this.sx4 - 2*this.sx2*this.sx3*this.sx3y*this.sx4 + this.sx2*this.sx2y*Math.pow(this.sx4, 2)
-                + this.sx*this.sx3y*Math.pow(this.sx4, 2) + this.sx2*this.sx2y*this.sx3*this.sx5 + Math.pow(this.sx2, 2)*this.sx3y*this.sx5 - this.sx*this.sx3*this.sx3y*this.sx5 - this.sx*this.sx2y*this.sx4*this.sx5
-                - Math.pow(this.sx2, 2)*this.sx2y*this.sx6 + this.sx*this.sx2y*this.sx3*this.sx6 + this.sx3*Math.pow(this.sx4, 2)*this.sxy - Math.pow(this.sx3, 2)*this.sx5*this.sxy - this.sx2*this.sx4*this.sx5*this.sxy
-                + this.sx*Math.pow(this.sx5, 2)*this.sxy + this.sx2*this.sx3*this.sx6*this.sxy - this.sx*this.sx4*this.sx6*this.sxy - Math.pow(this.sx4, 3)*this.sy + 2*this.sx3*this.sx4*this.sx5*this.sy
-                - this.sx2*Math.pow(this.sx5, 2)*this.sy - Math.pow(this.sx3, 2)*this.sx6*this.sy + this.sx2*this.sx4*this.sx6*this.sy);
-        this.a1 = 1 / Z * (this.sx2y*Math.pow(this.sx3, 3) - this.sx2*Math.pow(this.sx3, 2)*this.sx3y - this.sx2*this.sx2y*this.sx3*this.sx4 + Math.pow(this.sx2, 2)*this.sx3y*this.sx4
-                + this.sx*this.sx3*this.sx3y*this.sx4 - this.n*this.sx3y*Math.pow(this.sx4, 2) - this.sx*this.sx2y*this.sx3*this.sx5 - this.sx*this.sx2*this.sx3y*this.sx5
-                + this.n*this.sx3*this.sx3y*this.sx5 + this.n*this.sx2y*this.sx4*this.sx5 + this.sx*this.sx2*this.sx2y*this.sx6 - this.n*this.sx2y*this.sx3*this.sx6
-                - Math.pow(this.sx3, 2)*this.sx4*this.sxy + 2*this.sx2*this.sx3*this.sx5*this.sxy - this.n*Math.pow(this.sx5, 2)*this.sxy - Math.pow(this.sx2, 2)*this.sx6*this.sxy
-                + this.n*this.sx4*this.sx6*this.sxy + this.sx3*Math.pow(this.sx4, 2)*this.sy - Math.pow(this.sx3, 2)*this.sx5*this.sy - this.sx2*this.sx4*this.sx5*this.sy
-                + this.sx*Math.pow(this.sx5, 2)*this.sy + this.sx2*this.sx3*this.sx6*this.sy - this.sx*this.sx4*this.sx6*this.sy);
-        this.a2 = -1 / Z * (this.sx2*this.sx2y*Math.pow(this.sx3, 2) - Math.pow(this.sx2, 2)*this.sx3*this.sx3y + this.sx*Math.pow(this.sx3, 2)*this.sx3y - 2*this.sx*this.sx2y*this.sx3*this.sx4
-                + this.sx*this.sx2*this.sx3y*this.sx4 - this.n*this.sx3*this.sx3y*this.sx4 + this.n*this.sx2y*Math.pow(this.sx4, 2) - Math.pow(this.sx, 2)*this.sx3y*this.sx5 + this.n*this.sx2*this.sx3y*this.sx5
-                + Math.pow(this.sx, 2)*this.sx2y*this.sx6 - this.n*this.sx2*this.sx2y*this.sx6 - Math.pow(this.sx3, 3)*this.sxy + this.sx2*this.sx3*this.sx4*this.sxy + this.sx*this.sx3*this.sx5*this.sxy
-                - this.n*this.sx4*this.sx5*this.sxy - this.sx*this.sx2*this.sx6*this.sxy + this.n*this.sx3*this.sx6*this.sxy + Math.pow(this.sx3, 2)*this.sx4*this.sy - this.sx2*Math.pow(this.sx4, 2)*this.sy
-                - this.sx2*this.sx3*this.sx5*this.sy + this.sx*this.sx4*this.sx5*this.sy + Math.pow(this.sx2, 2)*this.sx6*this.sy - this.sx*this.sx3*this.sx6*this.sy);
-        this.a3 = 1 / Z * (Math.pow(this.sx2, 2)*this.sx2y*this.sx3 - this.sx*this.sx2y*Math.pow(this.sx3, 2) - Math.pow(this.sx2, 3)*this.sx3y + 2*this.sx*this.sx2*this.sx3*this.sx3y
-                - this.n*Math.pow(this.sx3, 2)*this.sx3y - this.sx*this.sx2*this.sx2y*this.sx4 + this.n*this.sx2y*this.sx3*this.sx4 - Math.pow(this.sx, 2)*this.sx3y*this.sx4 + this.n*this.sx2*this.sx3y*this.sx4
-                + Math.pow(this.sx, 2)*this.sx2y*this.sx5 - this.n*this.sx2*this.sx2y*this.sx5 - this.sx2*Math.pow(this.sx3, 2)*this.sxy + Math.pow(this.sx2, 2)*this.sx4*this.sxy + this.sx*this.sx3*this.sx4*this.sxy
-                - this.n*Math.pow(this.sx4, 2)*this.sxy - this.sx*this.sx2*this.sx5*this.sxy + this.n*this.sx3*this.sx5*this.sxy + Math.pow(this.sx3, 3)*this.sy - 2*this.sx2*this.sx3*this.sx4*this.sy
-                + this.sx*Math.pow(this.sx4, 2)*this.sy + Math.pow(this.sx2, 2)*this.sx5*this.sy - this.sx*this.sx3*this.sx5*this.sy);*/
-
-        this.a0 = 1/Z * (this.sx2*this.sy - this.sx*this.sxy);
-        this.a1 = 1/Z * (n*this.sxy - this.sx*this.sy);
-
-        /*if(this.n > 99)
-        {
-            this.n = 100;
-            this.lastSx = this.sx;
-            this.lastSx2 = this.sx2;
-            this.lastSy = this.sy;
-            this.lastSxy = this.sxy;
-        }*/
-
-        // Log.d(TAG, String.format("a0: %f a1: %f n: %d", this.a0, this.a1, this.n));
-        // Log.d(TAG, String.format("Z: %f sx: %f sx2: %f sy: %f sxy: %f", Z, this.sx, this.sx2, this.sy, this.sxy));
     }
 
     public void updatePoseData(TangoPoseData pose) { this.poseData = pose; }
@@ -145,5 +105,5 @@ public class ClassMetrics
     public void updateElevationAngle(double elevationAngle){ this.elevationAngle = elevationAngle - Math.PI / 2; }
 
     public int getN() { return this.n; }
-    public double[] getRegressorParams(){ return new double[] {this.a0, this.a1}; }
+    public double[] getRegressorParams(){ return new double[] {this.a0, this.a1, this.a2}; }
 }

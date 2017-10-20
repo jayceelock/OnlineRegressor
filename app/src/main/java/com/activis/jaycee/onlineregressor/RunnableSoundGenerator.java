@@ -31,7 +31,6 @@ public class RunnableSoundGenerator implements Runnable
             double xPositionSource = activityMain.getRenderer().getObjectPosition().x;
 
             activityMain.getMetrics().updateElevationAngle(elevationAngle);
-            Log.d(TAG, String.format("xPos: %f", xPositionListener));
 
             float[] tempSrc = new float[3];
             float[] tempList = new float[3];

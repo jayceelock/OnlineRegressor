@@ -2,6 +2,7 @@ package com.activis.jaycee.onlineregressor;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
 
 import java.io.Serializable;
 
@@ -13,6 +14,7 @@ public class ClassInterfaceParameters implements Serializable
     private float pitchHighLim, pitchLowLim, pitchGradient, pitchIntercept;
     private float gainHighLim, gainLowLim, gainGradient, gainIntercept;
     private float distanceThreshold;
+    private float intercept, grad;
 
     private int vibrationDelay, voiceTiming;
 
@@ -81,6 +83,11 @@ public class ClassInterfaceParameters implements Serializable
         this.voiceTiming = prefs.getInt(voiceTimer, 5000);
 
         activityMain = (ActivityMain)context;
+
+        double gradientAngle = Math.toDegrees(Math.atan((pitchHighLim - pitchLowLim) / Math.PI));
+
+        grad = (float) (Math.tan(Math.toRadians(gradientAngle)));
+        intercept = (float) (pitchHighLim - Math.PI / 2 * grad);
     }
 
     void updatePitchParams(float highLim, float lowLim)
@@ -107,6 +114,7 @@ public class ClassInterfaceParameters implements Serializable
 
         // Compensate for the Tango's default position being 90deg upright
         elevation -= Math.PI / 2;
+        // Log.d(TAG, String.format("Angle: %f", elevation));
         if(elevation >= Math.PI / 2)
         {
             pitch = (float)(Math.pow(2, pitchLowLim));
@@ -119,15 +127,41 @@ public class ClassInterfaceParameters implements Serializable
 
         else
         {
-            double gradientAngle = Math.toDegrees(Math.atan((pitchHighLim - pitchLowLim) / Math.PI));
+            if((activityMain.getMetrics().getN() + 1) % 100 == 0)
+            {
+                double[] regressorParams = activityMain.getMetrics().getRegressorParams();
 
-            float grad = (float)(Math.tan(Math.toRadians(gradientAngle)));
-            float intercept = (float)(pitchHighLim - Math.PI / 2 * grad);
+                grad = (float)(-regressorParams[1]);
+                intercept = (float)(regressorParams[0]);
+                Log.d(TAG, "Updating params");
+            }
 
             pitch = (float)(Math.pow(2, grad * -elevation + intercept));
+
+            if(pitch > Math.pow(2, 12))
+            {
+                pitch = (float)Math.pow(2, 12);
+            }
+            else if(pitch < Math.pow(2, 6))
+            {
+                pitch = (float)Math.pow(2, 6);
+            }
+
+            // Log.d(TAG, String.format("Exponent: %f", regressorParams[0] + regressorParams[1] * elevation + regressorParams[2] * Math.pow(elevation, 2) + elevation * Math.pow(regressorParams[3], 3)));
+            Log.d(TAG, String.format("Original: %f New: %f", getOPitch(elevation), pitch));
         }
 
         return pitch;
+    }
+
+    public float getOPitch(double elevation)
+    {
+        double gradientAngle = Math.toDegrees(Math.atan((pitchHighLim - pitchLowLim) / Math.PI));
+
+        float grad = (float) (Math.tan(Math.toRadians(gradientAngle)));
+        float intercept = (float) (pitchHighLim - Math.PI / 2 * grad);
+
+        return (float)(Math.pow(2, grad * -elevation + intercept));
     }
 
     public float getPitch(double srcX, double srcY, double listX, double listY)

@@ -52,7 +52,8 @@ public class ActivityMain extends AppCompatActivity
     private ClassHelper helper = new ClassHelper(ActivityMain.this);
     private ClassMetrics metrics;
 
-    private int displayRotation = 0;
+    private int displayRotation = 0, n = 0;
+    private double errorCum = 0.0, error = 0.0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -146,6 +147,8 @@ public class ActivityMain extends AppCompatActivity
         switch(action)
         {
             case MotionEvent.ACTION_DOWN:
+                this.n += 1;
+                this.errorCum += error;
                 // metrics.updateTargetPosition(currentTarget);
                 double[] currentTarget = helper.selectRandomTarget();
                 renderer.updateTarget(currentTarget);
@@ -260,14 +263,17 @@ public class ActivityMain extends AppCompatActivity
         });
     }
 
-    public void setAccuracyText(final double error)
+    public void setAccuracyText(double error)
     {
+        this.error = error;
+        final double average = errorCum / n;
+
         runOnUiThread(new Runnable()
         {
             @Override
             public void run()
             {
-                textViewAccuracy.setText(new DecimalFormat("##.##").format(error));
+                textViewAccuracy.setText(new DecimalFormat("##.##").format(average));
             }
         });
     }

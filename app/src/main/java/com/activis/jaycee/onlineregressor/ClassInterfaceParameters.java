@@ -119,12 +119,12 @@ public class ClassInterfaceParameters implements Serializable
         gainIntercept = gainLowLim - gainGradient * distLowLimGain;
     }
 
-    float getPitch(double elevation)
+    public float getAPitch(double elevation)
     {
         float pitch;
 
         // Compensate for the Tango's default position being 90deg upright
-        elevation -= Math.PI / 2;
+        // elevation -= Math.PI / 2;
         // Log.d(TAG, String.format("Angle: %f", elevation));
         if(elevation >= Math.PI / 2)
         {
@@ -147,7 +147,6 @@ public class ClassInterfaceParameters implements Serializable
                 a2 = (float)(regressorParams[2]);
                 Log.d(TAG, "Updating params");
             }
-
             pitch = (float)(Math.pow(2, a0 - elevation*a1));
 
             if(pitch > Math.pow(2, 12))
@@ -158,8 +157,12 @@ public class ClassInterfaceParameters implements Serializable
             {
                 pitch = (float)Math.pow(2, 6);
             }
-            Log.d(TAG, String.format("Original: %f New: %f", getOPitch(elevation), pitch));
-            activityMain.setPitchText(getOPitch(elevation), pitch);
+            //Log.d(TAG, String.format("Original: %f New: %f", getOPitch(elevation), pitch));
+
+            if(activityMain.usingAdaptivePitch())
+            {
+                activityMain.setPitchText(getOPitch(elevation), pitch);
+            }
         }
 
         return pitch;
@@ -167,12 +170,22 @@ public class ClassInterfaceParameters implements Serializable
 
     public float getOPitch(double elevation)
     {
+        // Compensate for the Tango's default position being 90deg upright
+        // elevation -= Math.PI / 2;
+
         double gradientAngle = Math.toDegrees(Math.atan((pitchHighLim - pitchLowLim) / Math.PI));
 
         float grad = (float) (Math.tan(Math.toRadians(gradientAngle)));
         float intercept = (float) (pitchHighLim - Math.PI / 2 * grad);
 
-        return (float)(Math.pow(2, grad * -elevation + intercept));
+        float pitch = (float)(Math.pow(2, grad * -elevation + intercept));
+
+        if(!activityMain.usingAdaptivePitch())
+        {
+            activityMain.setPitchText(pitch, getAPitch(elevation));
+        }
+
+        return pitch;
     }
 
     public float getPitch(double srcX, double srcY, double listX, double listY)

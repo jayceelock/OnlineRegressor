@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Display;
 import android.view.MotionEvent;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import com.google.atap.tangoservice.Tango;
@@ -44,6 +45,7 @@ public class ActivityMain extends AppCompatActivity
 
     private SurfaceView surfaceView;
     private TextView textViewAccuracy, textViewOrigPitch, textViewAdaptedPitch;
+    private Switch switchAdaptivePitch;
 
     private ClassFrameCallback sceneFrameCallback = new ClassFrameCallback(ActivityMain.this);
     private RunnableSoundGenerator runnableSoundGenerator = new RunnableSoundGenerator(ActivityMain.this);
@@ -65,6 +67,7 @@ public class ActivityMain extends AppCompatActivity
         textViewAccuracy = (TextView) findViewById(R.id.text_accuracy);
         textViewAdaptedPitch = (TextView)findViewById(R.id.text_adapted_pitch);
         textViewOrigPitch = (TextView)findViewById(R.id.text_orig_pitch);
+        switchAdaptivePitch = (Switch)findViewById(R.id.switch_use_adaptive_pitch);
 
         renderer = new ClassRenderer(this);
         metrics = new ClassMetrics();
@@ -148,7 +151,7 @@ public class ActivityMain extends AppCompatActivity
         {
             case MotionEvent.ACTION_DOWN:
                 this.n += 1;
-                this.errorCum += error;
+                this.errorCum += Math.abs(error);
                 // metrics.updateTargetPosition(currentTarget);
                 double[] currentTarget = helper.selectRandomTarget();
                 renderer.updateTarget(currentTarget);
@@ -289,4 +292,5 @@ public class ActivityMain extends AppCompatActivity
     public RunnableSoundGenerator getRunnableSoundGenerator() { return this.runnableSoundGenerator; }
     public int getDisplayRotation() { return this.displayRotation; }
     public ClassMetrics getMetrics() { return this.metrics; }
+    public boolean usingAdaptivePitch() { return this.switchAdaptivePitch.isChecked(); }
 }

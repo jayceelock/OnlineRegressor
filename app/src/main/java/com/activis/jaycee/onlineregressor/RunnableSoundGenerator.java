@@ -26,12 +26,12 @@ public class RunnableSoundGenerator implements Runnable
         {
             mVector targetPoseVector = new mVector(activityMain.getRenderer().getObjectPosition().x, activityMain.getRenderer().getObjectPosition().y, activityMain.getRenderer().getObjectPosition().z);
 
-            double elevationAngle = ClassHelper.getElevationAngle(targetPoseVector, tangoPose);
+            double elevationAngle = ClassHelper.getElevationAngle(targetPoseVector, tangoPose) - Math.PI / 2;
             double xPositionListener = ClassHelper.getXPosition(targetPoseVector, tangoPose);
             double xPositionSource = activityMain.getRenderer().getObjectPosition().x;
 
             activityMain.getMetrics().updateElevationAngle(elevationAngle);
-            activityMain.setAccuracyText(elevationAngle - Math.PI / 2);
+            activityMain.setAccuracyText(elevationAngle);
 
             float[] tempSrc = new float[3];
             float[] tempList = new float[3];
@@ -48,8 +48,16 @@ public class RunnableSoundGenerator implements Runnable
             double zDist = activityMain.getRenderer().getObjectPosition().toArray()[2] - tangoPose.translation[1];
 
             float distanceToObjective = (float)(Math.sqrt(xDist * xDist + yDist * yDist + zDist * zDist));
+            float pitch = 0.f;
 
-            float pitch = activityMain.getInterfaceParameters().getPitch(elevationAngle);
+            if(activityMain.usingAdaptivePitch())
+            {
+                pitch = activityMain.getInterfaceParameters().getAPitch(elevationAngle);
+            }
+            else
+            {
+                pitch = activityMain.getInterfaceParameters().getOPitch(elevationAngle);
+            }
             float gain = activityMain.getInterfaceParameters().getGain(distanceToObjective);
 
             tempSrc[0] = (float)xPositionSource;

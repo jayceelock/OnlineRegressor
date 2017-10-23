@@ -103,7 +103,7 @@ public class ClassMetrics
     public void updateGain(float gain) { this.gain = gain; }
     public void updatePitch(float pitch) { this.pitch = pitch; }
     public void updateTargetPosition(double[] position){ this.targetPosition = position; }
-    public void updateElevationAngle(double elevationAngle){ this.elevationAngle = elevationAngle - Math.PI / 2; }
+    public void updateElevationAngle(double elevationAngle){ this.elevationAngle = elevationAngle; }
 
     public int getN() { return this.n; }
     public double[] getRegressorParams(){ return new double[] {this.a0, this.a1, this.a2}; }

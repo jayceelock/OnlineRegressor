@@ -14,7 +14,7 @@ public class ClassInterfaceParameters implements Serializable
     private float pitchHighLim, pitchLowLim, pitchGradient, pitchIntercept;
     private float gainHighLim, gainLowLim, gainGradient, gainIntercept;
     private float distanceThreshold;
-    private float a0, a1, a2;
+    private float a0, a1, a2, a3;
 
     private int vibrationDelay, voiceTiming;
 
@@ -86,18 +86,27 @@ public class ClassInterfaceParameters implements Serializable
 
         double gradientAngle = Math.toDegrees(Math.atan((pitchHighLim - pitchLowLim) / Math.PI));
 
-        if(activityMain.getMetrics().getOrder() == 2)
+        if(activityMain.getMetrics().getOrder() == 1)
         {
             a1 = (float) (Math.tan(Math.toRadians(gradientAngle)));
             a0 = (float) (pitchHighLim - Math.PI / 2 * a1);
         }
 
+        else if(activityMain.getMetrics().getOrder() == 2)
+        {
+            /* Get initial values from MatLab */
+            a0 = 8.9f;
+            a1 = -0.8071f;
+            a2 = -0.0256f;
+        }
+
         else if(activityMain.getMetrics().getOrder() == 3)
         {
             /* Get initial values from MatLab */
-            a0 = 2.8234f;
-            a1 = -5.5891f;
-            a2 = 2.2394f;
+            a0 = 8.9f;
+            a1 = -0.8846f;
+            a2 = -0.0062f;
+            a3 = 0.1084f;
         }
     }
 
@@ -143,11 +152,14 @@ public class ClassInterfaceParameters implements Serializable
                 double[] regressorParams = activityMain.getMetrics().getRegressorParams();
 
                 a0 = (float)(regressorParams[0]);
-                a1 = (float)(-regressorParams[1]);
+                a1 = (float)(regressorParams[1]);
                 a2 = (float)(regressorParams[2]);
+                a3 = (float)(regressorParams[3]);
                 Log.d(TAG, "Updating params");
             }
-            pitch = (float)(Math.pow(2, a0 - elevation*a1));
+            Log.d(TAG, String.format("a0: %f a1: %f a2: %f", a0, a1, a2));
+            pitch = (float)(Math.pow(2, a0 + elevation*a1 + elevation*elevation*a2 + elevation*elevation*elevation*a3));
+            // Log.d(TAG, String.format("Pitch: %f", pitch));
 
             if(pitch > Math.pow(2, 12))
             {
@@ -157,7 +169,6 @@ public class ClassInterfaceParameters implements Serializable
             {
                 pitch = (float)Math.pow(2, 6);
             }
-            //Log.d(TAG, String.format("Original: %f New: %f", getOPitch(elevation), pitch));
 
             if(activityMain.usingAdaptivePitch())
             {

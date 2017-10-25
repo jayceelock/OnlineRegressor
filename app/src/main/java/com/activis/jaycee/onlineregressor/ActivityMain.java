@@ -152,7 +152,6 @@ public class ActivityMain extends AppCompatActivity
             case MotionEvent.ACTION_DOWN:
                 this.n += 1;
                 this.errorCum += Math.abs(error);
-                // metrics.updateTargetPosition(currentTarget);
                 double[] currentTarget = helper.selectRandomTarget();
                 renderer.updateTarget(currentTarget);
                 metrics.updateTargetPosition(currentTarget);

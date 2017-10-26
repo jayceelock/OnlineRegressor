@@ -11,6 +11,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Display;
 import android.view.MotionEvent;
+import android.view.View;
+import android.widget.RadioButton;
 import android.widget.Switch;
 import android.widget.TextView;
 
@@ -54,7 +56,7 @@ public class ActivityMain extends AppCompatActivity
     private ClassHelper helper = new ClassHelper(ActivityMain.this);
     private ClassMetrics metrics;
 
-    private int displayRotation = 0, n = 0;
+    private int displayRotation = 0, n = 0, regressionOrder = 1;
     private double errorCum = 0.0, error = 0.0;
 
     @Override
@@ -70,7 +72,7 @@ public class ActivityMain extends AppCompatActivity
         switchAdaptivePitch = (Switch)findViewById(R.id.switch_use_adaptive_pitch);
 
         renderer = new ClassRenderer(this);
-        metrics = new ClassMetrics();
+        metrics = new ClassMetrics(this);
 
         interfaceParameters = new ClassInterfaceParameters(ActivityMain.this);
 
@@ -280,6 +282,18 @@ public class ActivityMain extends AppCompatActivity
         });
     }
 
+    public void radioButtonClick(View view)
+    {
+        boolean checked = ((RadioButton) view).isChecked();
+
+        switch(view.getId())
+        {
+            case R.id.radio_order_1: if(checked)regressionOrder = 1; interfaceParameters.setInitialCoefficients(1); break;
+            case R.id.radio_order_2: if(checked)regressionOrder = 2; interfaceParameters.setInitialCoefficients(2); break;
+            case R.id.radio_order_3: if(checked)regressionOrder = 3; interfaceParameters.setInitialCoefficients(3); break;
+        }
+    }
+
     public Tango getTango(){ return this.tango; }
     public ClassRenderer getRenderer() { return  this.renderer; }
     public boolean getTangoConnected() { return this.tangoConnected; }
@@ -292,4 +306,5 @@ public class ActivityMain extends AppCompatActivity
     public int getDisplayRotation() { return this.displayRotation; }
     public ClassMetrics getMetrics() { return this.metrics; }
     public boolean usingAdaptivePitch() { return this.switchAdaptivePitch.isChecked(); }
+    public int getRegressionOrder() { return this.regressionOrder; }
 }

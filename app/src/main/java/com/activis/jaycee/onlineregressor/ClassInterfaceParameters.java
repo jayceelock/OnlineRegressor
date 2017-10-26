@@ -84,23 +84,31 @@ public class ClassInterfaceParameters implements Serializable
 
         activityMain = (ActivityMain)context;
 
+        setInitialCoefficients(activityMain.getRegressionOrder());
+    }
+
+    public void setInitialCoefficients(int order)
+    {
         double gradientAngle = Math.toDegrees(Math.atan((pitchHighLim - pitchLowLim) / Math.PI));
 
-        if(activityMain.getMetrics().getOrder() == 1)
+        if(order == 1)
         {
             a1 = (float) (Math.tan(Math.toRadians(gradientAngle)));
             a0 = (float) (pitchHighLim - Math.PI / 2 * a1);
+            a2 = 0;
+            a3 = 0;
         }
 
-        else if(activityMain.getMetrics().getOrder() == 2)
+        else if(order == 2)
         {
             /* Get initial values from MatLab */
             a0 = 8.9f;
             a1 = -0.8071f;
             a2 = -0.0256f;
+            a3 = 0;
         }
 
-        else if(activityMain.getMetrics().getOrder() == 3)
+        else if(order == 3)
         {
             /* Get initial values from MatLab */
             a0 = 8.9f;
@@ -110,7 +118,7 @@ public class ClassInterfaceParameters implements Serializable
         }
     }
 
-    void updatePitchParams(float highLim, float lowLim)
+    public void updatePitchParams(float highLim, float lowLim)
     {
         pitchHighLim = highLim;
         pitchLowLim = lowLim;
@@ -119,7 +127,7 @@ public class ClassInterfaceParameters implements Serializable
         pitchIntercept = pitchLowLim - pitchGradient * distLowLimPitch;
     }
 
-    void updateGainParams(float highLim, float lowLim)
+    public void updateGainParams(float highLim, float lowLim)
     {
         gainHighLim = highLim;
         gainLowLim = lowLim;
@@ -133,8 +141,6 @@ public class ClassInterfaceParameters implements Serializable
         float pitch;
 
         // Compensate for the Tango's default position being 90deg upright
-        // elevation -= Math.PI / 2;
-        // Log.d(TAG, String.format("Angle: %f", elevation));
         if(elevation >= Math.PI / 2)
         {
             pitch = (float)(Math.pow(2, pitchLowLim));
@@ -157,7 +163,7 @@ public class ClassInterfaceParameters implements Serializable
                 a3 = (float)(regressorParams[3]);
                 Log.d(TAG, "Updating params");
             }
-            Log.d(TAG, String.format("a0: %f a1: %f a2: %f", a0, a1, a2));
+            Log.d(TAG, String.format("a0: %f a1: %f a2: %f a3: %f", a0, a1, a2, a3));
             pitch = (float)(Math.pow(2, a0 + elevation*a1 + elevation*elevation*a2 + elevation*elevation*elevation*a3));
             // Log.d(TAG, String.format("Pitch: %f", pitch));
 

@@ -50,7 +50,30 @@
             android:id="@+id/switch_use_adaptive_pitch"
             android:text="Adaptive Pitch On"
             android:checked="true"/>
+        <RadioGroup
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <RadioButton
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/radio_order_1"
+                android:text="1st Order"
+                android:checked="true"
+                android:onClick="radioButtonClick"/>
+            <RadioButton
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/radio_order_2"
+                android:text="2nd Order"
+                android:onClick="radioButtonClick"/>
+            <RadioButton
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/radio_order_3"
+                android:text="3rd Order"
+                android:onClick="radioButtonClick"/>
+        </RadioGroup>
     </LinearLayout>
-
 
 </LinearLayout>

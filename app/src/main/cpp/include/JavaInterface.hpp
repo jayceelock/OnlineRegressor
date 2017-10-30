@@ -16,6 +16,7 @@ JNIEXPORT bool JNICALL Java_com_activis_jaycee_onlineregressor_JNINativeInterfac
 JNIEXPORT bool JNICALL Java_com_activis_jaycee_onlineregressor_JNINativeInterface_kill(JNIEnv* env, jobject obj);
 
 JNIEXPORT void JNICALL Java_com_activis_jaycee_onlineregressor_JNINativeInterface_playTarget(JNIEnv* env, jobject obj, jfloatArray src, jfloatArray list, jfloat gain, jfloat pitch);
+JNIEXPORT void JNICALL Java_com_activis_jaycee_onlineregressor_JNINativeInterface_playBand(JNIEnv* env, jobject obj, jfloat offset, jfloat pitch);
 
 #ifdef __cplusplus
 }

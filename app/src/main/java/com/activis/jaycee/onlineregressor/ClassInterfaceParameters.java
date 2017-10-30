@@ -93,8 +93,8 @@ public class ClassInterfaceParameters implements Serializable
 
         if(order == 1)
         {
-            a1 = 9.f;// (float) (Math.tan(Math.toRadians(gradientAngle)));
-            a0 = (float) (pitchHighLim - Math.PI / 2 * a1);
+            a1 = (float) (Math.tan(Math.toRadians(gradientAngle)));
+            a0 = 9.f;// (float) (pitchHighLim - Math.PI / 2 * a1);
             a2 = 0;
             a3 = 0;
         }
@@ -111,7 +111,7 @@ public class ClassInterfaceParameters implements Serializable
         else if(order == 3)
         {
             /* Get initial values from MatLab */
-            a0 = 9.f;// 8.9f;
+            a0 = 9.f;//8.9f;
             a1 = -0.8846f;
             a2 = -0.0062f;
             a3 = 0.1084f;

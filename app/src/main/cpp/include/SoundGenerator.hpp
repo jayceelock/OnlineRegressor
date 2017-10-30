@@ -36,7 +36,8 @@ namespace SoundGeneratorSpace
         // Sound generating functions
         short* generateSoundWave(size_t bufferSize, jfloat pitch, short lastVal, bool onUpSwing);
         void playTarget(JNIEnv* env, jfloatArray src, jfloatArray list, jfloat gain, jfloat pitch);
-        void startPlay(jfloat pitch);
+        void playBand(JNIEnv* env, jfloat offset, jfloat pitch);
+        void startPlay(ALuint source, ALuint* buf, jfloat pitch);
         void updatePlay(jfloat pitch);
 
         // Helper functions
@@ -44,8 +45,12 @@ namespace SoundGeneratorSpace
 
     private:
         ALuint targetSrc;
+        ALuint bandSrc;
         ALuint targetBuf[NUM_BUFFERS];
-        bool playing = false;
+        ALuint bandBuf[NUM_BUFFERS];
+
+        bool targetPlaying = false;
+        bool bandPlaying = false;
     };
 }
 

@@ -33,6 +33,10 @@ public class RunnableSoundGenerator implements Runnable
             activityMain.getMetrics().updateElevationAngle(elevationAngle);
             activityMain.setAccuracyText(elevationAngle);
 
+            /* Get current target angle and target offset */
+            double angle = Math.atan2(targetPoseVector.y, targetPoseVector.x);
+            float offset = (float)(Math.abs(elevationAngle / angle));
+
             float[] tempSrc = new float[3];
             float[] tempList = new float[3];
 
@@ -67,6 +71,7 @@ public class RunnableSoundGenerator implements Runnable
             activityMain.getMetrics().updateGain(gain);
 
             JNINativeInterface.playTarget(tempSrc, tempList, gain, pitch);
+            JNINativeInterface.playBand(offset, pitch);
         }
 
         catch(TangoException e)

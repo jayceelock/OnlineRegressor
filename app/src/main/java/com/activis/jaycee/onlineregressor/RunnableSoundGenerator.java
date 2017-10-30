@@ -1,6 +1,7 @@
 package com.activis.jaycee.onlineregressor;
 
 import android.content.Context;
+import android.os.SystemClock;
 import android.util.Log;
 
 import com.google.atap.tangoservice.TangoException;
@@ -13,6 +14,8 @@ public class RunnableSoundGenerator implements Runnable
     private TangoPoseData tangoPose;
 
     private ActivityMain activityMain;
+
+    private long timeOnTarget = 0;
 
     RunnableSoundGenerator(Context context)
     {
@@ -69,6 +72,19 @@ public class RunnableSoundGenerator implements Runnable
 
             activityMain.getMetrics().updatePitch(pitch);
             activityMain.getMetrics().updateGain(gain);
+
+            if(offset <= 0.05 && System.currentTimeMillis() - timeOnTarget > 3000)
+            {
+                Log.d(TAG, "Pausing");
+                JNINativeInterface.playTarget(tempSrc, tempList, 0.f, pitch);
+                SystemClock.sleep(1000);
+            }
+            else if(offset > 0.05)
+            {
+                Log.d(TAG, "Recording time");
+                timeOnTarget = System.currentTimeMillis();
+            }
+            Log.d(TAG, String.format("%d", timeOnTarget - System.currentTimeMillis()));
 
             JNINativeInterface.playTarget(tempSrc, tempList, gain, pitch);
             JNINativeInterface.playBand(offset, pitch);

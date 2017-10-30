@@ -163,7 +163,7 @@ public class ClassInterfaceParameters implements Serializable
                 a3 = (float)(regressorParams[3]);
                 Log.d(TAG, "Updating params");
             }
-            Log.d(TAG, String.format("a0: %f a1: %f a2: %f a3: %f", a0, a1, a2, a3));
+            // Log.d(TAG, String.format("a0: %f a1: %f a2: %f a3: %f", a0, a1, a2, a3));
             pitch = (float)(Math.pow(2, a0 + elevation*a1 + elevation*elevation*a2 + elevation*elevation*elevation*a3));
             // Log.d(TAG, String.format("Pitch: %f", pitch));
 

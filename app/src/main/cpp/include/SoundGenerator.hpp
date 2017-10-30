@@ -2,7 +2,7 @@
 #define SOUND_GENERATOR
 
 #define SOUNDLOG "SoundGenerator.cpp"
-#define NUM_BUFFERS 1//4
+#define NUM_BUFFERS 1
 #define SOUND_LEN 8
 #define SAMPLE_RATE 44100
 
@@ -35,16 +35,16 @@ namespace SoundGeneratorSpace
 
         // Sound generating functions
         short* generateSoundWave(size_t bufferSize, jfloat pitch, short lastVal, bool onUpSwing);
-        void play(JNIEnv* env, jfloatArray src, jfloatArray list, jfloat gain, jfloat pitch);
+        void playTarget(JNIEnv* env, jfloatArray src, jfloatArray list, jfloat gain, jfloat pitch);
         void startPlay(jfloat pitch);
         void updatePlay(jfloat pitch);
 
         // Helper functions
-        bool sourcePlaying();
+        bool sourcePlaying(ALuint source);
 
     private:
-        ALuint soundSrc;
-        ALuint soundBuf[NUM_BUFFERS];
+        ALuint targetSrc;
+        ALuint targetBuf[NUM_BUFFERS];
         bool playing = false;
     };
 }

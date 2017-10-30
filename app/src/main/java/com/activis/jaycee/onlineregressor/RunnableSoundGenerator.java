@@ -66,7 +66,7 @@ public class RunnableSoundGenerator implements Runnable
             activityMain.getMetrics().updatePitch(pitch);
             activityMain.getMetrics().updateGain(gain);
 
-            JNINativeInterface.play(tempSrc, tempList, gain, pitch);
+            JNINativeInterface.playTarget(tempSrc, tempList, gain, pitch);
         }
 
         catch(TangoException e)

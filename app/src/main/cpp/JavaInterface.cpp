@@ -25,9 +25,9 @@ Java_com_activis_jaycee_onlineregressor_JNINativeInterface_kill(JNIEnv* env, job
 }
 
 JNIEXPORT void JNICALL
-Java_com_activis_jaycee_onlineregressor_JNINativeInterface_play(JNIEnv* env, jobject obj, jfloatArray src, jfloatArray list, jfloat gain, jfloat pitch)
+Java_com_activis_jaycee_onlineregressor_JNINativeInterface_playTarget(JNIEnv* env, jobject obj, jfloatArray src, jfloatArray list, jfloat gain, jfloat pitch)
 {
-    sound.play(env, src, list, gain, pitch);
+    sound.playTarget(env, src, list, gain, pitch);
 
     return;
 }

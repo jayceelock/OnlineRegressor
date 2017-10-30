@@ -55,8 +55,8 @@ namespace SoundGeneratorSpace
 
     bool SoundGenerator::startSound()
     {
-        alGenBuffers(NUM_BUFFERS, soundBuf);
-        alGenSources(1, &soundSrc);
+        alGenBuffers(NUM_BUFFERS, targetBuf);
+        alGenSources(1, &targetSrc);
         playing = false;
 
         __android_log_print(ANDROID_LOG_INFO, SOUNDLOG, "Started sound");
@@ -66,8 +66,8 @@ namespace SoundGeneratorSpace
 
     bool SoundGenerator::endSound()
     {
-        alDeleteBuffers(NUM_BUFFERS, soundBuf);
-        alDeleteSources(1, &soundSrc);
+        alDeleteBuffers(NUM_BUFFERS, targetBuf);
+        alDeleteSources(1, &targetSrc);
         playing = false;
 
         __android_log_print(ANDROID_LOG_INFO, SOUNDLOG, "Ended Sound.");
@@ -75,7 +75,7 @@ namespace SoundGeneratorSpace
         return 0;
     }
 
-    void SoundGenerator::play(JNIEnv *env, jfloatArray src, jfloatArray list, jfloat gain, jfloat pitch)
+    void SoundGenerator::playTarget(JNIEnv *env, jfloatArray src, jfloatArray list, jfloat gain, jfloat pitch)
     {
         // Get source and listener coords and write to JArray
         jsize srcLen = env->GetArrayLength(src);
@@ -88,7 +88,7 @@ namespace SoundGeneratorSpace
         env->GetFloatArrayRegion(list, 0, listLen, lList);
 
         // Set source properties
-        alSourcef(soundSrc, AL_GAIN, gain);
+        alSourcef(targetSrc, AL_GAIN, gain);
 
         // Check to see if target is centre of screen: fix for OpenAL not handling centre sounds properly
         if(sqrt((lList[0] - lSrc[0]) * (lList[0] - lSrc[0])) < 0.1)
@@ -106,12 +106,12 @@ namespace SoundGeneratorSpace
         alListenerfv(AL_ORIENTATION, orient);
 
         // Set source position and orientation
-        alSource3f(soundSrc, AL_POSITION, lSrc[0], lList[1], lList[2]);
-        alSource3f(soundSrc, AL_VELOCITY, 0.f, 0.f, 0.f);
+        alSource3f(targetSrc, AL_POSITION, lSrc[0], lList[1], lList[2]);
+        alSource3f(targetSrc, AL_VELOCITY, 0.f, 0.f, 0.f);
 
-        alSourcei(soundSrc, AL_LOOPING, AL_TRUE);
+        alSourcei(targetSrc, AL_LOOPING, AL_TRUE);
 
-        if(!sourcePlaying())
+        if(!sourcePlaying(targetSrc))
         {
             startPlay(pitch);
             playing = true;
@@ -119,7 +119,7 @@ namespace SoundGeneratorSpace
 
         else
         {
-            alSourcef(soundSrc, AL_PITCH, pitch / 512.f);
+            alSourcef(targetSrc, AL_PITCH, pitch / 512.f);
         }
     }
 
@@ -149,12 +149,12 @@ namespace SoundGeneratorSpace
                 onUpSwing = false;
             }
 
-            alBufferData(soundBuf[i], AL_FORMAT_MONO16, samples, bufferSize, SAMPLE_RATE);
+            alBufferData(targetBuf[i], AL_FORMAT_MONO16, samples, bufferSize, SAMPLE_RATE);
             free(samples);
         }
 
-        alSourceQueueBuffers(soundSrc, NUM_BUFFERS, soundBuf);
-        alSourcePlay(soundSrc);
+        alSourceQueueBuffers(targetSrc, NUM_BUFFERS, targetBuf);
+        alSourcePlay(targetSrc);
 
         __android_log_print(ANDROID_LOG_INFO, SOUNDLOG, "Playing");
     }
@@ -173,7 +173,7 @@ namespace SoundGeneratorSpace
         ALuint buffer;
         ALint processedBuffers;
 
-        alGetSourcei(soundSrc, AL_BUFFERS_PROCESSED, &processedBuffers);
+        alGetSourcei(targetSrc, AL_BUFFERS_PROCESSED, &processedBuffers);
 
         if(processedBuffers < 1)
         {
@@ -191,11 +191,11 @@ namespace SoundGeneratorSpace
         {
             /* Fill samples before unqueing */
             short* samples = generateSoundWave(bufferSize, pitch, lastVal, onUpSwing);
-            alSourceUnqueueBuffers(soundSrc, 1, &buffer);
+            alSourceUnqueueBuffers(targetSrc, 1, &buffer);
 
             alBufferData(buffer, AL_FORMAT_MONO16, samples, bufferSize, SAMPLE_RATE);
 
-            alSourceQueueBuffers(soundSrc, 1, &buffer);
+            alSourceQueueBuffers(targetSrc, 1, &buffer);
 
             /* Prep for next update */
             lastVal = samples[bufferSize - 1];
@@ -212,17 +212,17 @@ namespace SoundGeneratorSpace
             free(samples);
         }
 
-        if(!sourcePlaying())
+        if(!sourcePlaying(targetSrc))
         {
-            alSourcePlay(soundSrc);
+            alSourcePlay(targetSrc);
         }
     }
 
-    bool SoundGenerator::sourcePlaying()
+    bool SoundGenerator::sourcePlaying(ALuint source)
     {
         ALint state;
 
-        alGetSourcei(soundSrc, AL_SOURCE_STATE, &state);
+        alGetSourcei(source, AL_SOURCE_STATE, &state);
 
         if(state == AL_PLAYING)
         {

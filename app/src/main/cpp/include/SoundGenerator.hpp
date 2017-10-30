@@ -3,6 +3,7 @@
 
 #define SOUNDLOG "SoundGenerator.cpp"
 #define NUM_BUFFERS 1
+#define NUM_BAND_SOURCES 2
 #define SOUND_LEN 8
 #define SAMPLE_RATE 44100
 

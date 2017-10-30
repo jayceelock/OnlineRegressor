@@ -127,7 +127,7 @@ namespace SoundGeneratorSpace
         alSourcef(bandSrc, AL_GAIN, gain);
         alSourcei(bandSrc, AL_LOOPING, AL_TRUE);
 
-        if(!sourcePlaying(bandSrc))
+        if(!sourcePlaying(bandSrc))// || !sourcePlaying(bandSrc[1]))
         {
             startPlay(bandSrc, bandBuf, pitch / 2);
             bandPlaying = true;

@@ -44,12 +44,12 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/text_orig_pitch"/>
-        <Switch
+<!--        <Switch
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/switch_use_adaptive_pitch"
             android:text="Adaptive Pitch On"
-            android:checked="true"/>
+            android:checked="true"/>-->
         <RadioGroup
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -57,9 +57,15 @@
             <RadioButton
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:id="@+id/radio_non_adaptive"
+                android:text="Non-adaptive"
+                android:checked="true"
+                android:onClick="radioButtonClick"/>
+            <RadioButton
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:id="@+id/radio_order_1"
                 android:text="1st Order"
-                android:checked="true"
                 android:onClick="radioButtonClick"/>
             <RadioButton
                 android:layout_width="match_parent"

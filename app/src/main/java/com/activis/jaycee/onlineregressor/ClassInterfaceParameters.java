@@ -16,8 +16,6 @@ public class ClassInterfaceParameters implements Serializable
     private float distanceThreshold;
     private float a0, a1, a2, a3;
 
-    private int vibrationDelay, voiceTiming;
-
     private ActivityMain activityMain;
 
     ClassInterfaceParameters(Context context)
@@ -74,24 +72,25 @@ public class ClassInterfaceParameters implements Serializable
         this.gainLowLim = prefs.getFloat(gainLow, 0.5f);
         updateGainParams(gainHighLim, gainLowLim);
 
-        /* Set Vibration params */
-        this.vibrationDelay = prefs.getInt(vibration, 60);
-
         /* Set obstacle detection alert distance threshold */
         this.distanceThreshold = prefs.getFloat(distanceThreshold, 1.15f);
 
-        this.voiceTiming = prefs.getInt(voiceTimer, 5000);
-
         activityMain = (ActivityMain)context;
 
-        setInitialCoefficients(activityMain.getRegressionOrder());
+        setInitialCoefficients(activityMain.getRegressor());
     }
 
     public void setInitialCoefficients(int order)
     {
         double gradientAngle = Math.toDegrees(Math.atan((pitchHighLim - pitchLowLim) / Math.PI));
 
-        if(order == 1)
+        if(order == 0)
+        {
+            a1 = (float) (Math.tan(Math.toRadians(gradientAngle)));
+            a0 = 9.f;// (float) (pitchHighLim - Math.PI / 2 * a1);
+        }
+
+        else if(order == 1)
         {
             a1 = (float) (Math.tan(Math.toRadians(gradientAngle)));
             a0 = 9.f;// (float) (pitchHighLim - Math.PI / 2 * a1);
@@ -153,7 +152,7 @@ public class ClassInterfaceParameters implements Serializable
 
         else
         {
-            if((activityMain.getMetrics().getN() + 1) % 100 == 0)
+            if((activityMain.getMetrics().getN() + 1) % 100 == 0 && activityMain.getRegressor() != 0)
             {
                 double[] regressorParams = activityMain.getMetrics().getRegressorParams();
 
@@ -176,7 +175,7 @@ public class ClassInterfaceParameters implements Serializable
                 pitch = (float)Math.pow(2, 6);
             }
 
-            if(activityMain.usingAdaptivePitch())
+            if(activityMain.getUsingAdaptation())
             {
                 activityMain.setPitchText(getOPitch(elevation), pitch);
             }
@@ -197,63 +196,12 @@ public class ClassInterfaceParameters implements Serializable
 
         float pitch = (float)(Math.pow(2, grad * -elevation + intercept));
 
-        if(!activityMain.usingAdaptivePitch())
+        if(!activityMain.getUsingAdaptation())
         {
             activityMain.setPitchText(pitch, getAPitch(elevation));
         }
 
         return pitch;
-    }
-
-    public float getPitch(double srcX, double srcY, double listX, double listY)
-    {
-        double diffX = (listX - srcX);
-        double diffY = (listY - srcY);
-
-        float elevation = (float)(Math.atan2(diffY, diffX));
-
-        if(elevation >= Math.PI / 2)
-        {
-            return (float)(Math.pow(2, pitchLowLim));
-        }
-
-        else if(elevation <= -Math.PI / 2)
-        {
-            return (float)(Math.pow(2, pitchHighLim));
-        }
-
-        else
-        {
-            double gradientAngle = Math.toDegrees(Math.atan((pitchHighLim - pitchLowLim) / Math.PI));
-
-            float grad = (float)(Math.tan(Math.toRadians(gradientAngle)));
-            float intercept = (float)(pitchHighLim - Math.PI / 2 * grad);
-
-            return (float)(Math.pow(2, grad * -elevation + intercept));
-        }
-    }
-
-    public float getGain(double src, double list)
-    {
-        double diffd = (list - src);
-
-        // Use absolute difference, because you might end up behind the marker
-        float diff = (float)Math.sqrt(diffd * diffd);
-
-        if(diff >= distHighLimGain)
-        {
-            return gainHighLim;
-        }
-
-        else if(diff <= distLowLimGain)
-        {
-            return gainLowLim;
-        }
-
-        else
-        {
-            return gainGradient * diff + gainIntercept;
-        }
     }
 
     float getGain(double distance)
@@ -276,15 +224,4 @@ public class ClassInterfaceParameters implements Serializable
             return gainGradient * diff + gainIntercept;
         }
     }
-
-    public void setVibrationDelay(int vibrationDelay)
-    {
-        this.vibrationDelay = vibrationDelay;
-    }
-
-    public int getVibrationDelay() { return vibrationDelay; }
-    public float[] getGainLimits() { return new float[]{gainLowLim, gainHighLim}; }
-    public float[] getPitchLimits() { return new float[]{pitchLowLim, pitchHighLim}; }
-    public float getDistanceThreshold() { return distanceThreshold; }
-    int getVoiceTiming(){ return this.voiceTiming; }
 }

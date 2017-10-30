@@ -50,7 +50,7 @@ public class ClassMetrics
 
         double Z = 0;
 
-        int order = activityMain.getRegressionOrder();
+        int order = activityMain.getRegressor();
 
         this.sx  +=  (this.elevationAngle);
         this.sx2 +=  Math.pow(this.elevationAngle, 2);
@@ -66,12 +66,6 @@ public class ClassMetrics
 
         if(order == 1)
         {
-            /*this.sx  +=  (this.elevationAngle);
-            this.sx2 +=  Math.pow(this.elevationAngle, 2);
-
-            this.sy   += log2(this.pitch);
-            this.sxy  += log2(this.pitch) * this.elevationAngle;*/
-
             Z = this.n*this.sx2 - this.sx*this.sx;
 
             this.a0 = 1/Z * (this.sx2*this.sy - this.sx*this.sxy);
@@ -82,15 +76,6 @@ public class ClassMetrics
 
         else if(order == 2)
         {
-            /*this.sx  +=  (this.elevationAngle);
-            this.sx2 +=  Math.pow(this.elevationAngle, 2);
-            this.sx3 +=  Math.pow(this.elevationAngle, 3);
-            this.sx4 +=  Math.pow(this.elevationAngle, 4);
-
-            this.sy    += log2(this.pitch);
-            this.sxy   += log2(this.pitch) * this.elevationAngle;
-            this.sx2y  += log2(this.pitch) * Math.pow(this.elevationAngle, 2);*/
-
             Z = Math.pow(this.sx2, 3) - 2*this.sx*this.sx2*this.sx3 + this.n*Math.pow(this.sx3, 2) + Math.pow(this.sx, 2)*this.sx4 - this.n*this.sx2*this.sx4;
 
             this.a0 = 1/Z *  (Math.pow(this.sx2, 2)*this.sx2y - this.sx*this.sx2y*this.sx3 - this.sx2*this.sx3*this.sxy + this.sx*this.sx4*this.sxy + Math.pow(this.sx3, 2)*this.sy - this.sx2*this.sx4*this.sy);
@@ -101,18 +86,6 @@ public class ClassMetrics
 
         else if(order == 3)
         {
-            /*this.sx  +=  (this.elevationAngle);
-            this.sx2 +=  Math.pow(this.elevationAngle, 2);
-            this.sx3 +=  Math.pow(this.elevationAngle, 3);
-            this.sx4 +=  Math.pow(this.elevationAngle, 4);
-            this.sx5 +=  Math.pow(this.elevationAngle, 5);
-            this.sx6 +=  Math.pow(this.elevationAngle, 6);
-
-            this.sy    += log2(this.pitch);
-            this.sxy   += log2(this.pitch) * this.elevationAngle;
-            this.sx2y  += log2(this.pitch) * Math.pow(this.elevationAngle, 2);
-            this.sx3y  += log2(this.pitch) * Math.pow(this.elevationAngle, 3);*/
-
             Z = Math.pow(sx3, 4) - 3*sx2*Math.pow(sx3, 2)*sx4 + Math.pow(sx2, 2)*Math.pow(sx4, 2) + 2*sx*sx3*Math.pow(sx4, 2)
                     - n*Math.pow(sx4, 3) + 2*Math.pow(sx2, 2)*sx3*sx5 - 2*sx*Math.pow(sx3, 2)*sx5 - 2*sx*sx2*sx4*sx5
                     + 2*n*sx3*sx4*sx5 + Math.pow(sx, 2)*Math.pow(sx5, 2) - n*sx2*Math.pow(sx5, 2) - Math.pow(sx2, 3)*sx6

@@ -13,7 +13,6 @@ import android.view.Display;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.RadioButton;
-import android.widget.Switch;
 import android.widget.TextView;
 
 import com.google.atap.tangoservice.Tango;
@@ -39,7 +38,7 @@ public class ActivityMain extends AppCompatActivity
 
     private AtomicBoolean frameAvailableTangoThread = new AtomicBoolean(false);
 
-    private boolean tangoConnected = false;
+    private boolean tangoConnected = false, usingAdaptation = false;
 
     private int connectedTextureIdGlThread = INVALID_TEXTURE_ID;
 
@@ -47,7 +46,6 @@ public class ActivityMain extends AppCompatActivity
 
     private SurfaceView surfaceView;
     private TextView textViewAccuracy, textViewOrigPitch, textViewAdaptedPitch;
-    private Switch switchAdaptivePitch;
 
     private ClassFrameCallback sceneFrameCallback = new ClassFrameCallback(ActivityMain.this);
     private RunnableSoundGenerator runnableSoundGenerator = new RunnableSoundGenerator(ActivityMain.this);
@@ -56,7 +54,7 @@ public class ActivityMain extends AppCompatActivity
     private ClassHelper helper = new ClassHelper(ActivityMain.this);
     private ClassMetrics metrics;
 
-    private int displayRotation = 0, n = 0, regressionOrder = 1;
+    private int displayRotation = 0, n = 0, regression = 1;
     private double errorCum = 0.0, error = 0.0;
 
     @Override
@@ -69,7 +67,6 @@ public class ActivityMain extends AppCompatActivity
         textViewAccuracy = (TextView) findViewById(R.id.text_accuracy);
         textViewAdaptedPitch = (TextView)findViewById(R.id.text_adapted_pitch);
         textViewOrigPitch = (TextView)findViewById(R.id.text_orig_pitch);
-        switchAdaptivePitch = (Switch)findViewById(R.id.switch_use_adaptive_pitch);
 
         renderer = new ClassRenderer(this);
         metrics = new ClassMetrics(this);
@@ -288,9 +285,10 @@ public class ActivityMain extends AppCompatActivity
 
         switch(view.getId())
         {
-            case R.id.radio_order_1: if(checked)regressionOrder = 1; interfaceParameters.setInitialCoefficients(1); break;
-            case R.id.radio_order_2: if(checked)regressionOrder = 2; interfaceParameters.setInitialCoefficients(2); break;
-            case R.id.radio_order_3: if(checked)regressionOrder = 3; interfaceParameters.setInitialCoefficients(3); break;
+            case R.id.radio_non_adaptive: if(checked)regression = 0; interfaceParameters.setInitialCoefficients(0); usingAdaptation = false; break;
+            case R.id.radio_order_1: if(checked)regression = 1; interfaceParameters.setInitialCoefficients(1); usingAdaptation = true; break;
+            case R.id.radio_order_2: if(checked)regression = 2; interfaceParameters.setInitialCoefficients(2); usingAdaptation = true; break;
+            case R.id.radio_order_3: if(checked)regression = 3; interfaceParameters.setInitialCoefficients(3); usingAdaptation = true; break;
         }
     }
 
@@ -305,6 +303,6 @@ public class ActivityMain extends AppCompatActivity
     public RunnableSoundGenerator getRunnableSoundGenerator() { return this.runnableSoundGenerator; }
     public int getDisplayRotation() { return this.displayRotation; }
     public ClassMetrics getMetrics() { return this.metrics; }
-    public boolean usingAdaptivePitch() { return this.switchAdaptivePitch.isChecked(); }
-    public int getRegressionOrder() { return this.regressionOrder; }
+    public boolean getUsingAdaptation() { return this.usingAdaptation; }
+    public int getRegressor() { return this.regression; }
 }

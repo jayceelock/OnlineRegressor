@@ -57,7 +57,7 @@ public class RunnableSoundGenerator implements Runnable
             float distanceToObjective = (float)(Math.sqrt(xDist * xDist + yDist * yDist + zDist * zDist));
             float pitch = 0.f;
 
-            if(activityMain.usingAdaptivePitch())
+            if(activityMain.getUsingAdaptation())
             {
                 pitch = activityMain.getInterfaceParameters().getAPitch(elevationAngle);
             }

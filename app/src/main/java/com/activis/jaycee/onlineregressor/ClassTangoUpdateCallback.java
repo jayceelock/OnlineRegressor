@@ -38,5 +38,7 @@ public class ClassTangoUpdateCallback extends Tango.TangoUpdateCallback
         activityMain.getRunnableSoundGenerator().setTangoPose(pose);
         activityMain.getMetrics().updatePoseData(pose);
         activityMain.getMetrics().updateTimestamp(pose.timestamp);
+        activityMain.getMetrics().updateRegressor();
+        activityMain.getMetrics().writeToWifi();
     }
 }

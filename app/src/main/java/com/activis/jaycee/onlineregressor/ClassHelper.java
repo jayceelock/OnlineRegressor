@@ -194,38 +194,6 @@ public class ClassHelper
 
         Random randomNumberGenerator = new Random();
 
-        /*// Top left quad
-        for(int i = 0; i < NUM_POINTS_PER_QUAD; i ++)
-        {
-            double[] target = {-1.5 + (0 - (-1.5)) * randomNumberGenerator.nextDouble(),
-                    0 + (0.75 - 0) * randomNumberGenerator.nextDouble(), -2.0};
-            targets.add(target);
-        }
-
-        // Top right quad
-        for(int i = 0; i < NUM_POINTS_PER_QUAD; i ++)
-        {
-            double[] target = {0 + (1.5  - 0) * randomNumberGenerator.nextDouble(),
-                    0 + (0.75 - 0) * randomNumberGenerator.nextDouble(), -2.0};
-            targets.add(target);
-        }
-
-        // Bottom left quad
-        for(int i = 0; i < NUM_POINTS_PER_QUAD; i ++)
-        {
-            double[] target = {-1.5  + (0 - (-1.5)) * randomNumberGenerator.nextDouble(),
-                    -0.75 + (0 - 0.75) * randomNumberGenerator.nextDouble(), -2.0};
-            targets.add(target);
-        }
-
-        // Bottom right quad
-        for(int i = 0; i < NUM_POINTS_PER_QUAD; i ++)
-        {
-            double[] target = {0 + (1.5  - 0) * randomNumberGenerator.nextDouble(),
-                    -0.75 + (0 - 0.75) * randomNumberGenerator.nextDouble(), -2.0};
-            targets.add(target);
-        }*/
-
         for(int i = 0; i < NUM_POINTS_PER_QUAD*2; i ++)
         {
             double[] target = {0, 0.75*randomNumberGenerator.nextDouble(), -2.0};

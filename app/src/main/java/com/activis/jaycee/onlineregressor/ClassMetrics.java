@@ -1,14 +1,24 @@
 package com.activis.jaycee.onlineregressor;
 
+import android.os.AsyncTask;
 import android.util.Log;
 
 import com.google.atap.tangoservice.TangoPoseData;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.io.StringReader;
+import java.net.Socket;
+
 public class ClassMetrics
 {
     private static final String TAG = ClassMetrics.class.getSimpleName();
+    private static final String DELIMITER = "'";
 
     private ActivityMain activityMain;
+    private WifiDataSend dataStreamer = null;
 
     private TangoPoseData poseData;
     private float gain = 0.f;
@@ -43,9 +53,53 @@ public class ClassMetrics
         return (Math.log(x) / Math.log(2));
     }
 
-    public void updateTimestamp(double timestamp)
+    public void writeToWifi()
     {
-        this.timeStamp = timestamp;
+        String csvString = "";
+
+        csvString += String.valueOf(this.timeStamp);
+        csvString += DELIMITER;
+
+        csvString += String.valueOf(poseData.translation[0]);
+        csvString += DELIMITER;
+        csvString += String.valueOf(poseData.translation[1]);
+        csvString += DELIMITER;
+        csvString += String.valueOf(poseData.translation[2]);
+        csvString += DELIMITER;
+
+
+        csvString += String.valueOf(poseData.rotation[0]);
+        csvString += DELIMITER;
+        csvString += String.valueOf(poseData.rotation[1]);
+        csvString += DELIMITER;
+        csvString += String.valueOf(poseData.rotation[2]);
+        csvString += DELIMITER;
+        csvString += String.valueOf(poseData.rotation[3]);
+        csvString += DELIMITER;
+
+        csvString += String.valueOf(gain);
+        csvString += DELIMITER;
+
+        csvString += String.valueOf(pitch);
+        csvString += DELIMITER;
+
+        for(int i = 0; i < this.targetPosition.length; i ++)
+        {
+            csvString += String.valueOf(targetPosition[i]);
+            csvString += DELIMITER;
+        }
+
+        /* WRITE TO WIFI PORT */
+        if(dataStreamer == null || dataStreamer.getStatus() != AsyncTask.Status.RUNNING)
+        {
+            Log.d(TAG, "wifi transmitting");
+            dataStreamer = new WifiDataSend();
+            dataStreamer.execute(csvString);
+        }
+    }
+
+    public void updateRegressor()
+    {
         this.n += 1;
 
         double Z = 0;
@@ -115,7 +169,6 @@ public class ClassMetrics
 
         if(Double.isInfinite(1/Z) || Double.isNaN(1/Z))
         {
-            // Log.d(TAG, String.format("Pitch: %f\nElevation: %f\nLog(Pitch): %f\n", this.pitch, this.elevationAngle, log2(this.pitch)));
             Log.d(TAG, "Singularity");
             Log.d(TAG, String.format("Z: %f\nsx: %f\n sx2: %f", Z, this.sx, this.sx2));
         }
@@ -136,7 +189,51 @@ public class ClassMetrics
     public void updatePitch(float pitch) { this.pitch = pitch; }
     public void updateTargetPosition(double[] position){ this.targetPosition = position; }
     public void updateElevationAngle(double elevationAngle){ this.elevationAngle = elevationAngle; }
+    public void updateTimestamp(double timestamp) { this.timeStamp = timestamp; }
 
     public int getN() { return this.n; }
+
     public double[] getRegressorParams(){ return new double[] {this.a0, this.a1, this.a2, this.a3}; }
+
+    private static class WifiDataSend extends AsyncTask<String, Void, Void>
+    {
+        private String serverIdAddress = "172.23.156.88";
+        private int connectionPort = 6666;
+
+        public WifiDataSend(){ }
+
+        @Override
+        protected Void doInBackground(String... strings)
+        {
+            try
+            {
+                Socket socket = new Socket(serverIdAddress, connectionPort);
+                OutputStream stream = socket.getOutputStream();
+                PrintWriter writer = new PrintWriter(stream);
+
+                int charsRead;
+                int bufferLen = 1024;
+                char[] tempBuffer = new char[bufferLen];
+
+                BufferedReader bufferedReader = new BufferedReader(new StringReader(strings[0]));
+
+                while((charsRead = bufferedReader.read(tempBuffer, 0, bufferLen)) != -1)
+                {
+                    writer.print(tempBuffer);
+                }
+                writer.write("\n");
+
+                writer.flush();
+                writer.close();
+
+                socket.close();
+            }
+            catch(IOException e)
+            {
+                Log.e(TAG, "Wifi write error: ", e);
+            }
+
+            return null;
+        }
+    }
 }

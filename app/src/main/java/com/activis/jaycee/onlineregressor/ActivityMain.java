@@ -149,11 +149,11 @@ public class ActivityMain extends AppCompatActivity
         switch(action)
         {
             case MotionEvent.ACTION_DOWN:
-                this.n += 1;
+                //this.n += 1;
                 this.errorCum += Math.abs(error);
                 double[] currentTarget = helper.selectRandomTarget();
                 renderer.updateTarget(currentTarget);
-                metrics.updateTargetPosition(currentTarget);
+                // metrics.updateTargetPosition(currentTarget);
                 break;
         }
 
@@ -277,6 +277,15 @@ public class ActivityMain extends AppCompatActivity
                 textViewAccuracy.setText(new DecimalFormat("##.##").format(average));
             }
         });
+    }
+
+    public void generateNewTarget()
+    {
+        this.n += 1;
+        this.errorCum += Math.abs(error);
+        double[] currentTarget = helper.selectRandomTarget();
+        renderer.updateTarget(currentTarget);
+        metrics.updateTargetPosition(currentTarget);
     }
 
     public void radioButtonClick(View view)

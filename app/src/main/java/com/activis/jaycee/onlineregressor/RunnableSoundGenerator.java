@@ -77,7 +77,9 @@ public class RunnableSoundGenerator implements Runnable
             {
                 Log.d(TAG, "Pausing");
                 JNINativeInterface.playTarget(tempSrc, tempList, 0.f, pitch);
+                JNINativeInterface.playBand(offset, false, pitch);
                 SystemClock.sleep(1000);
+                activityMain.generateNewTarget();
             }
             else if(offset > 0.05)
             {
@@ -87,7 +89,7 @@ public class RunnableSoundGenerator implements Runnable
             Log.d(TAG, String.format("%d", timeOnTarget - System.currentTimeMillis()));
 
             JNINativeInterface.playTarget(tempSrc, tempList, gain, pitch);
-            JNINativeInterface.playBand(offset, pitch);
+            JNINativeInterface.playBand(offset, true, pitch);
         }
 
         catch(TangoException e)

@@ -112,10 +112,10 @@ namespace SoundGeneratorSpace
         }
     }
 
-    void SoundGenerator::playBand(JNIEnv* env, jfloat offset, jfloat pitch)
+    void SoundGenerator::playBand(JNIEnv* env, jfloat offset, jboolean play, jfloat pitch)
     {
         float gain;
-        if(offset <= 0.05)
+        if(offset <= 0.05 && play)
         {
             gain = -200 * offset*offset + 0.5f;
         }

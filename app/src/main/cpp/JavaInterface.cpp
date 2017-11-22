@@ -33,9 +33,9 @@ Java_com_activis_jaycee_onlineregressor_JNINativeInterface_playTarget(JNIEnv* en
 }
 
 JNIEXPORT void JNICALL
-Java_com_activis_jaycee_onlineregressor_JNINativeInterface_playBand(JNIEnv* env, jobject obj, jfloat offset, jfloat pitch)
+Java_com_activis_jaycee_onlineregressor_JNINativeInterface_playBand(JNIEnv* env, jobject obj, jfloat offset, jboolean play, jfloat pitch)
 {
-    sound.playBand(env, offset, pitch);
+    sound.playBand(env, offset, play ,pitch);
 
     return;
 }

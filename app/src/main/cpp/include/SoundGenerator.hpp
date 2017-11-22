@@ -37,7 +37,7 @@ namespace SoundGeneratorSpace
         // Sound generating functions
         short* generateSoundWave(size_t bufferSize, jfloat pitch, short lastVal, bool onUpSwing);
         void playTarget(JNIEnv* env, jfloatArray src, jfloatArray list, jfloat gain, jfloat pitch);
-        void playBand(JNIEnv* env, jfloat offset, jfloat pitch);
+        void playBand(JNIEnv* env, jfloat offset, jboolean play, jfloat pitch);
         void startPlay(ALuint source, ALuint* buf, jfloat pitch);
         void updatePlay(jfloat pitch);
 

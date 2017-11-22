@@ -27,7 +27,7 @@ public class ClassMetrics
     private double timeStamp;
     private double[] targetPosition = new double[3];
 
-    // Regression summing
+    /* Regression summing */
     private int n = 0;
     private double sx = 0;
     private double sx2 = 0;
@@ -66,7 +66,6 @@ public class ClassMetrics
         csvString += DELIMITER;
         csvString += String.valueOf(poseData.translation[2]);
         csvString += DELIMITER;
-
 
         csvString += String.valueOf(poseData.rotation[0]);
         csvString += DELIMITER;
@@ -132,9 +131,12 @@ public class ClassMetrics
         {
             Z = Math.pow(this.sx2, 3) - 2*this.sx*this.sx2*this.sx3 + this.n*Math.pow(this.sx3, 2) + Math.pow(this.sx, 2)*this.sx4 - this.n*this.sx2*this.sx4;
 
-            this.a0 = 1/Z *  (Math.pow(this.sx2, 2)*this.sx2y - this.sx*this.sx2y*this.sx3 - this.sx2*this.sx3*this.sxy + this.sx*this.sx4*this.sxy + Math.pow(this.sx3, 2)*this.sy - this.sx2*this.sx4*this.sy);
-            this.a1 = 1/Z * -(this.sx*this.sx2*this.sx2y - this.n*this.sx2y*this.sx3 - Math.pow(this.sx2, 2)*this.sxy + this.n*this.sx4*this.sxy + this.sx2*this.sx3*this.sy - this.sx*this.sx4*this.sy);
-            this.a2 = 1/Z *  (Math.pow(this.sx, 2)*this.sx2y - this.n*this.sx2*this.sx2y - this.sx*this.sx2*this.sxy + this.n*this.sx3*this.sxy + Math.pow(this.sx2, 2)*this.sy - this.sx*this.sx3*this.sy);
+            this.a0 = 1/Z *  (Math.pow(this.sx2, 2)*this.sx2y - this.sx*this.sx2y*this.sx3 - this.sx2*this.sx3*this.sxy
+                    + this.sx*this.sx4*this.sxy + Math.pow(this.sx3, 2)*this.sy - this.sx2*this.sx4*this.sy);
+            this.a1 = 1/Z * -(this.sx*this.sx2*this.sx2y - this.n*this.sx2y*this.sx3 - Math.pow(this.sx2, 2)*this.sxy
+                    + this.n*this.sx4*this.sxy + this.sx2*this.sx3*this.sy - this.sx*this.sx4*this.sy);
+            this.a2 = 1/Z *  (Math.pow(this.sx, 2)*this.sx2y - this.n*this.sx2*this.sx2y - this.sx*this.sx2*this.sxy
+                    + this.n*this.sx3*this.sxy + Math.pow(this.sx2, 2)*this.sy - this.sx*this.sx3*this.sy);
             this.a3 = 0;
         }
 

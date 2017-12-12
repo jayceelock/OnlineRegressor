@@ -48,7 +48,7 @@ public class ClassMetrics
 
     public ClassMetrics(ActivityMain activityMain) { this.activityMain = activityMain;}
 
-    static double log2(float x)
+    private static double log2(float x)
     {
         return (Math.log(x) / Math.log(2));
     }
@@ -199,7 +199,7 @@ public class ClassMetrics
 
     private static class WifiDataSend extends AsyncTask<String, Void, Void>
     {
-        private String serverIdAddress = "172.23.156.88";
+        private String serverIdAddress = "10.5.42.163";
         private int connectionPort = 6666;
 
         public WifiDataSend(){ }

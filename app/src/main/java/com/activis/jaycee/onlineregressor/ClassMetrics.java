@@ -89,6 +89,7 @@ public class ClassMetrics
         }
 
         /* WRITE TO WIFI PORT */
+        Log.d(TAG, "Before wifi");
         if(dataStreamer == null || dataStreamer.getStatus() != AsyncTask.Status.RUNNING)
         {
             Log.d(TAG, "wifi transmitting");
